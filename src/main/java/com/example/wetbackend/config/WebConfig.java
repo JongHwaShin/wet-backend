@@ -27,4 +27,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*") // 모든 헤더 허용
                 .allowCredentials(false); // 쿠키/인증 정보 전송 비활성화 (allowedOrigins("*")와 함께 사용 시 필수)
     }
+
+    /**
+     * RestTemplate 빈 등록
+     * 외부 API (예: 카카오 지도 API) 호출을 위해 사용합니다.
+     */
+    @org.springframework.context.annotation.Bean
+    public org.springframework.web.client.RestTemplate restTemplate() {
+        return new org.springframework.web.client.RestTemplate();
+    }
 }
