@@ -1,0 +1,38 @@
+// 플러그인 설정: 프로젝트에서 사용할 Gradle 플러그인들
+plugins {
+	id 'java' // Java 프로젝트 지원
+	id 'org.springframework.boot' version '3.2.0' // Spring Boot 플러그인 (버전 3.2.0)
+	id 'io.spring.dependency-management' version '1.1.4' // Spring 의존성 관리 플러그인
+}
+
+// 프로젝트 그룹 ID (패키지 네임스페이스)
+group = 'com.example'
+// 프로젝트 버전 (SNAPSHOT은 개발 중인 버전을 의미)
+version = '0.0.1-SNAPSHOT'
+
+// Java 컴파일 설정
+java {
+	sourceCompatibility = '17' // Java 17 버전 사용
+}
+
+// 의존성을 다운로드할 저장소 설정
+repositories {
+	mavenCentral() // Maven Central Repository 사용
+}
+
+// 프로젝트 의존성 (라이브러리) 설정
+dependencies {
+	// Spring Boot Data JPA: 데이터베이스 접근을 위한 JPA/Hibernate 지원
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// Spring Boot Web: REST API 개발을 위한 Spring MVC 지원
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// MariaDB JDBC 드라이버: MariaDB 데이터베이스 연결을 위한 드라이버 (런타임에만 필요)
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	// Spring Boot Test: 테스트 작성을 위한 라이브러리 (테스트 실행 시에만 필요)
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+// 테스트 실행 설정
+tasks.named('test') {
+	useJUnitPlatform() // JUnit 5 플랫폼 사용
+}
