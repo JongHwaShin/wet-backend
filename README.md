@@ -1,114 +1,128 @@
-# Wet Backend API
+# WET Backend (What to Eat Today)
 
-Spring Boot REST API backend for the Wet Flutter application with MariaDB integration.
+> 🍽️ 카카오 지도 API 기반 맛집 검색 백엔드 서비스
 
-## Prerequisites
+Spring Boot로 개발된 RESTful API 서버로, 카카오 로컬 API를 활용하여 주소 기반 맛집 검색 기능을 제공합니다.
 
-- Java 17 or higher
-- MariaDB server running
-- Gradle (wrapper included)
+## 🚀 주요 기능
 
-## Configuration
+- **카카오 지도 API 연동**: 키워드 기반 장소 검색
+- **맛집 검색 API**: 주소를 입력받아 주변 식당 정보 반환
+- **로깅 시스템**: 날짜별 로그 파일 자동 생성 및 검색 기록 저장
+- **CORS 설정**: 프론트엔드 연동을 위한 교차 출처 리소스 공유 지원
 
-Before running the application, update the MariaDB connection details in `src/main/resources/application.properties`:
+## 🛠️ 기술 스택
+
+- **Framework**: Spring Boot 3.x
+- **Language**: Java 17
+- **Database**: MariaDB
+- **ORM**: JPA/Hibernate
+- **Logging**: Logback
+- **Build Tool**: Gradle
+
+## 📦 설치 및 실행
+
+### 사전 요구사항
+- JDK 17 이상
+- MariaDB 10.x 이상
+- Gradle 8.x
+
+### 환경 설정
+
+`src/main/resources/application.properties` 파일을 수정하세요:
 
 ```properties
+# MariaDB 설정
 spring.datasource.url=jdbc:mariadb://localhost:3306/wetdb
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+spring.datasource.username=YOUR_USERNAME
+spring.datasource.password=YOUR_PASSWORD
+
+# 카카오 API 키 (필수!)
+kakao.api.key=YOUR_KAKAO_REST_API_KEY
 ```
 
-## Running the Application
-
-### Using Gradle Wrapper (Recommended)
+### 실행
 
 ```bash
-# Build the project
-./gradlew build
-
-# Run the application
+# Gradle로 실행
 ./gradlew bootRun
+
+# 또는 JAR 빌드 후 실행
+./gradlew build
+java -jar build/libs/wet-backend-0.0.1-SNAPSHOT.jar
 ```
 
-The server will start on `http://localhost:8080`
+서버는 기본적으로 `http://localhost:8080`에서 실행됩니다.
 
-## API Endpoints
+## 📡 API 엔드포인트
 
-### Health Check
-- **GET** `/api/health` - Check if the API is running
+### 맛집 검색
+```http
+GET /api/restaurants/search?address={주소}
+```
 
-### User Management
-- **GET** `/api/users` - Get all users
-- **GET** `/api/users/{id}` - Get user by ID
-- **POST** `/api/users` - Create a new user
-  ```json
-  {
-    "name": "John Doe",
-    "email": "john@example.com"
+**Parameters:**
+- `address` (required): 검색할 주소 (예: "서울시 강남구 역삼동")
+
+**Response:**
+```json
+{
+  "documents": [
+    {
+      "place_name": "맛집 이름",
+      "road_address_name": "도로명 주소",
+      "category_name": "음식점 > 한식 > 고기요리",
+      "phone": "전화번호",
+      "x": "경도",
+      "y": "위도"
+    }
+  ],
+  "meta": {
+    "total_count": 45,
+    "pageable_count": 45
   }
-  ```
-- **PUT** `/api/users/{id}` - Update user
-- **DELETE** `/api/users/{id}` - Delete user
-
-## Testing the API
-
-### Using curl
-
-```bash
-# Health check
-curl http://localhost:8080/api/health
-
-# Get all users
-curl http://localhost:8080/api/users
-
-# Create a user
-curl -X POST http://localhost:8080/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test User","email":"test@example.com"}'
+}
 ```
 
-## Project Structure
+## 📂 프로젝트 구조
 
 ```
-wet-backend/
-├── src/
-│   ├── main/
-│   │   ├── java/com/example/wetbackend/
-│   │   │   ├── WetBackendApplication.java    # Main application class
-│   │   │   ├── config/
-│   │   │   │   └── WebConfig.java            # CORS configuration
-│   │   │   ├── controller/
-│   │   │   │   └── UserController.java       # REST endpoints
-│   │   │   ├── model/
-│   │   │   │   └── User.java                 # User entity
-│   │   │   ├── repository/
-│   │   │   │   └── UserRepository.java       # Data access layer
-│   │   │   └── service/
-│   │   │       └── UserService.java          # Business logic
-│   │   └── resources/
-│   │       └── application.properties        # Configuration
-│   └── test/
-├── build.gradle                              # Gradle build configuration
-└── gradlew                                   # Gradle wrapper script
+src/main/java/com/example/wetbackend/
+├── controller/
+│   └── RestaurantController.java    # 맛집 검색 API 컨트롤러
+├── service/
+│   └── KakaoMapService.java         # 카카오 API 호출 서비스
+├── config/
+│   └── WebConfig.java               # CORS 설정
+└── WetBackendApplication.java       # 메인 애플리케이션
+
+src/main/resources/
+├── application.properties            # 애플리케이션 설정
+└── logback-spring.xml               # 로깅 설정
 ```
 
-## CORS Configuration
+## 📝 로그 파일
 
-The API is configured to accept requests from any origin for development purposes. In production, you should restrict this to your Flutter app's domain in `WebConfig.java`.
+로그는 `logs/` 디렉토리에 날짜별로 자동 생성됩니다:
+- 파일명 형식: `wet-backend-yyyy-MM-dd.log`
+- 보관 기간: 30일
+- 기록 내용: 검색 요청 주소, 검색 결과 데이터
 
-## Database
+## 🔑 카카오 API 키 발급
 
-The application uses JPA with Hibernate to automatically create/update the database schema. The `users` table will be created automatically when you first run the application.
+1. [Kakao Developers](https://developers.kakao.com/) 접속
+2. 애플리케이션 생성
+3. **REST API 키** 복사
+4. `application.properties`에 설정
 
-## Troubleshooting
+## 🔗 관련 프로젝트
 
-### Connection Issues
-- Ensure MariaDB is running
-- Verify database credentials in `application.properties`
-- Check if the database exists (create it if needed: `CREATE DATABASE wetdb;`)
+- [WET Frontend](https://github.com/JongHwaShin/wet) - Flutter 기반 모바일 앱
 
-### Port Already in Use
-If port 8080 is already in use, change it in `application.properties`:
-```properties
-server.port=8081
-```
+## 📝 라이선스
+
+This project is licensed under the MIT License.
+
+## 👨‍💻 개발자
+
+JongHwa Shin

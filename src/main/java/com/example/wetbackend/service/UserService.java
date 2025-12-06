@@ -85,6 +85,7 @@ public class UserService {
      * @param id 삭제할 사용자의 ID
      * @throws RuntimeException 해당 ID의 사용자가 존재하지 않을 경우
      */
+    @SuppressWarnings("null")
     public void deleteUser(Long id) {
         // ID로 사용자를 찾고, 없으면 예외를 발생시킵니다
         User user = userRepository.findById(id)

@@ -1,7 +1,6 @@
 package com.example.wetbackend.controller;
 
 import com.example.wetbackend.model.RestaurantDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.example.wetbackend.service.KakaoMapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +19,12 @@ import org.slf4j.LoggerFactory;
  */
 @RestController
 @RequestMapping("/api/restaurants")
+@RequiredArgsConstructor
 public class RestaurantController {
 
     private static final Logger logger = LoggerFactory.getLogger(RestaurantController.class);
 
-    @Autowired
-    private KakaoMapService kakaoMapService;
+    private final KakaoMapService kakaoMapService;
 
     /**
      * 주소 기반 주변 식당 검색
