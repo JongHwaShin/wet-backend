@@ -51,6 +51,36 @@ public class RestaurantController {
     }
 
     /**
+     * 주소 기반 맛집 추천 (랜덤 3개)
+     * 
+     * @param address 사용자가 선택한 주소
+     * @return 추천 식당 목록 (최대 3개)
+     */
+    @GetMapping("/recommendation")
+    public ResponseEntity<List<RestaurantDto>> getRecommendedRestaurants(@RequestParam String address) {
+        logger.info("========== 맛집 추천 요청 ==========");
+        logger.info("요청 주소: {}", address);
+
+        String query = address + " 맛집";
+        List<RestaurantDto> result = kakaoMapService.searchRestaurants(query);
+
+        if (result.isEmpty()) {
+            return ResponseEntity.ok(result);
+        }
+
+        // 결과 섞기
+        java.util.Collections.shuffle(result);
+
+        // 최대 3개 추출
+        List<RestaurantDto> recommendations = result.subList(0, Math.min(result.size(), 3));
+
+        logger.info("추천 완료. 결과 데이터: {}", recommendations);
+        logger.info("==================================");
+
+        return ResponseEntity.ok(recommendations);
+    }
+
+    /**
      * 식당 찜하기 (토글)
      * DB에 없는 식당이면 자동 저장 후 찜 처리
      */
